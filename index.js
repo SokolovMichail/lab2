@@ -93,7 +93,9 @@ function initBuffers()
         }
 
 
-    gl.bufferData(positionBuffer,new Float32Array(positions))
+    gl.bufferData(gl.ARRAY_BUFFER,
+        new Float32Array(positions),
+        gl.STATIC_DRAW);
 }
 
 function render()
@@ -127,8 +129,9 @@ function render()
     const stride = 0;         // how many bytes to get from one set of values to the next
                               // 0 = use type and numComponents above
     const offset = 0;         // how many bytes inside the buffer to start from
-    console.log(programInfo)
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    //console.log(programInfo)
+    //console.log(buffers)
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffers.position)
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
         numComponents,
@@ -142,11 +145,11 @@ function render()
 
     gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix,
         false,
-        programInfo.uniformLocations.projectionMatrix)
+        projectionMatrix)
 
     gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix,
         false,
-        programInfo.uniformLocations.modelViewMatrix)
+        modelViewMatrix)
 
     {
         const offset = 0;
@@ -168,6 +171,7 @@ function main()
         return;
     }
     initShaderProgram()
+    initBuffers()
     requestAnimationFrame(render)
 }
 
