@@ -1,6 +1,7 @@
 //GLOBALS
 let gl = null
-let speed = 0.0002;
+let rotation = 0
+const speed = 0.002
 let programInfo = {
 }
 
@@ -12,7 +13,7 @@ let buffers = {
 //SHADERS
 const FRAGMENT_SHADER = `
 void main() {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
 }
 `
 
@@ -122,6 +123,10 @@ function render()
 
     const modelViewMatrix = mat4.create();
     mat4.translate(modelViewMatrix,modelViewMatrix,[0,0,-5])
+    mat4.rotate(modelViewMatrix,  // destination matrix
+        modelViewMatrix,  // matrix to rotate
+        rotation,   // amount to rotate in radians
+        [0, 1, 0]);
 
     const numComponents = 2;  // pull out 2 values per iteration
     const type = gl.FLOAT;    // the data in the buffer is 32bit floats
@@ -156,7 +161,7 @@ function render()
         const vertexCount = 4;
         gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
     }
-
+    rotation+=speed;
     requestAnimationFrame(render)
 
 }
