@@ -1,4 +1,5 @@
-import {draw_square} from "./square";
+import {draw_square, initSquareBuffers} from "./square";
+import {drawCube, initCubeBuffers} from "./cube";
 //GLOBALS
 let gl = null
 let rotation = 0
@@ -12,24 +13,26 @@ let buffers = {
 
 
 //SHADERS
-const FRAGMENT_SHADER = `
-void main() {
-    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
-}
-`
-
 const VERTEX_SHADER = `
+    attribute vec4 aVertexPosition;
+    attribute vec4 aVertexColor;
+    uniform mat4 uModelViewMatrix;
+    uniform mat4 uProjectionMatrix;
+    varying lowp vec4 vColor;
+    void main(void) {
+      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+      vColor = aVertexColor;
+    }
+  `;
 
-attribute vec4 aVertexPosition;
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+// Fragment shader program
 
-
-void main() {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-}
-
-`
+const FRAGMENT_SHADER = `
+    varying lowp vec4 vColor;
+    void main(void) {
+      gl_FragColor = vColor;
+    }
+  `;
 
 function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
@@ -67,7 +70,8 @@ function initShaderProgram()
         "program":shaderProgram,
         attribLocations:
             {
-                vertexPosition: gl.getAttribLocation(shaderProgram,'aVertexPosition')
+                vertexPosition: gl.getAttribLocation(shaderProgram,'aVertexPosition'),
+                vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor') // For Cube!
             },
         uniformLocations: {
             projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
@@ -78,27 +82,7 @@ function initShaderProgram()
     return shaderProgram;
 }
 
-function initBuffers()
-{
-    const positionBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER,positionBuffer)
 
-    const positions = [
-        -1.0,  1.0,
-        1.0,  1.0,
-        -1.0, -1.0,
-        1.0, -1.0,
-    ];
-    buffers =
-        {
-            position: positionBuffer
-        }
-
-
-    gl.bufferData(gl.ARRAY_BUFFER,
-        new Float32Array(positions),
-        gl.STATIC_DRAW);
-}
 
 function render()
 {
@@ -128,7 +112,8 @@ function render()
         modelViewMatrix,  // matrix to rotate
         rotation,   // amount to rotate in radians
         [0, 1, 0]);
-    draw_square()
+    //draw_square(gl,buffers,programInfo,projectionMatrix,modelViewMatrix)
+    drawCube(gl,buffers,programInfo,projectionMatrix,modelViewMatrix)
     rotation+=speed;
     requestAnimationFrame(render)
 
@@ -144,7 +129,9 @@ function main()
         return;
     }
     initShaderProgram()
-    initBuffers()
+    //buffers = initSquareBuffers(gl)
+    buffers = initCubeBuffers(gl)
+    //console.log(buffers)
     requestAnimationFrame(render)
 }
 
