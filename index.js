@@ -10,7 +10,22 @@ let programInfo = {
 let buffers = {
 
 }
+const VERTEX_SHADER_SQR = `
+    attribute vec4 aVertexPosition;
+    uniform mat4 uModelViewMatrix;
+    uniform mat4 uProjectionMatrix;
+    varying lowp vec4 vColor;
+    void main(void) {
+      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    }
+  `;
 
+const FRAGMENT_SHADER_SQR = `
+    varying lowp vec4 vColor;
+    void main(void) {
+      gl_FragColor = vec4(1.0,1.0,0.0,1.0);
+    }
+  `;
 
 //SHADERS
 const VERTEX_SHADER = `
@@ -53,6 +68,8 @@ function loadShader(gl, type, source) {
 
 function initShaderProgram()
 {
+    //const vertexShader = loadShader(gl,gl.VERTEX_SHADER,VERTEX_SHADER_SQR)
+    //const fragmentShader = loadShader(gl,gl.FRAGMENT_SHADER,FRAGMENT_SHADER_SQR)
     const vertexShader = loadShader(gl,gl.VERTEX_SHADER,VERTEX_SHADER)
     const fragmentShader = loadShader(gl,gl.FRAGMENT_SHADER,FRAGMENT_SHADER)
 
